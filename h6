@@ -1,0 +1,78 @@
+class Particle {
+  float posX, posY, in, theta=0;
+  color  c;
+  
+  Particle(float x, float y, color c) {
+    posX = x;
+    posY = y;
+    this.c = c;
+  }
+  
+  public void move() {
+    update();
+    checkEdge();
+    display();
+  }
+  
+  void update() {
+    in +=  0.01;
+    theta = noise(posX * 0.005, posY * 0.005, in) * TWO_PI;
+    posX += 2 * cos(theta)-cos(2*theta);
+    posY += 2 * sin(theta)-sin(2*theta);
+  }
+  
+  void display() {
+    if (posX > 0 && posX < width && posY > 0  && posY < height) {
+      pixels[(int)posX + (int)posY * width] =  this.c;
+    }
+  }
+  
+  void checkEdge() {
+    if (posX < 0) posX = width;
+    if (posX > width ) posX =  0;
+    if (posY < 0 ) posY = height;
+    if (posY > height) posY =  0;
+  }
+}
+
+
+ArrayList<Particle> p=new ArrayList();
+ArrayList<Particle> p2=new ArrayList();
+float alpha;
+
+void setup() {
+  size(600, 600);
+  background(0);
+  noStroke();
+  for (int i = 0; i < 5000; i++) { 
+    float x = random(width);
+    float y = random(height/2);
+    float r = map(y, 0, height, 220, 150);
+    int c = color(56,r,204);
+    Particle pp=new Particle(x,y,c);
+    p.add(pp);
+  }
+  for (int j = 0; j < 5000; j++) { 
+    float x = random(width);
+    float y = random(height/2,height);
+    float r = map(y, 0, height, 255, 200);
+    int c = color(254,r,102);
+    Particle pp=new Particle(x,y,c);
+    p2.add(pp);
+  }
+}
+
+void draw() {
+  frameRate(30);
+  alpha = map(300, 0, width, 5, 35);
+  fill(0, alpha);
+  rect(0, 0, width, height);
+  loadPixels();
+  for (Particle pp : p) {
+    pp.move();
+  }
+  for (Particle pp : p2) {
+    pp.move();
+  }
+  updatePixels();
+}
